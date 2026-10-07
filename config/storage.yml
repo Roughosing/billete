@@ -1,0 +1,14 @@
+test:
+  service: Disk
+  root: <%= Rails.root.join("tmp/storage") %>
+
+local:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>
+
+# Event images move here when the app is deployed. Use an IAM role rather than
+# long-lived keys once the task runs on ECS.
+# amazon:
+#   service: S3
+#   region: eu-central-1
+#   bucket: billete-<%= Rails.env %>

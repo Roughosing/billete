@@ -1,0 +1,10 @@
+# Async only reaches the current process. Replace this when a feature needs
+# broadcasts across web processes.
+development:
+  adapter: async
+
+test:
+  adapter: test
+
+production:
+  adapter: async
