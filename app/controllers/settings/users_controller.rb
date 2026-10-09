@@ -1,7 +1,7 @@
 class Settings::UsersController < Settings::BaseController
   def show
   end
-  
+
   def destroy
     terminate_session
     Current.user.destroy

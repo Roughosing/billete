@@ -32,7 +32,7 @@ en:
   time:
     formats:
       event_card: "%a %-d %b, %H:%M"
-  
+
   activerecord:
     attributes:
       user:
