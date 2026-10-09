@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title><%= content_for(:title) || "Billete" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -10,12 +10,41 @@
 
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <a class="skip-link" href="#content">Skip to content</a>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <%= link_to root_path, class: "wordmark" do %>
+          <span class="wordmark__mark" aria-hidden="true"></span>
+          Billete
+        <% end %>
+
+        <nav class="site-nav" aria-label="Account">
+          <% if authenticated? %>
+            <%= link_to Current.user.full_name, settings_profile_path, class: "button button-quiet" %>
+            <%= button_to "Sign out", session_path, method: :delete, class: "button button-quiet" %>
+          <% else %>
+            <%= link_to "Sign in", new_session_path, class: "site-nav__link" %>
+            <%= link_to "Sign up", sign_up_path, class: "button" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content">
+      <% if flash[:notice].present? %>
+        <p class="flash flash-notice" role="status"><%= flash[:notice] %></p>
+      <% end %>
+      <% if flash[:alert].present? %>
+        <p class="flash flash-alert" role="alert"><%= flash[:alert] %></p>
+      <% end %>
+
+      <%= content_for?(:content) ? yield(:content) : yield %>
+    </main>
   </body>
 </html>

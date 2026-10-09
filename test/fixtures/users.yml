@@ -2,8 +2,12 @@
 
 one:
   email_address: one@example.com
+  first_name: One
+  last_name: Example
   password_digest: <%= password_digest %>
 
 two:
   email_address: two@example.com
+  first_name: Two
+  last_name: Example
   password_digest: <%= password_digest %>

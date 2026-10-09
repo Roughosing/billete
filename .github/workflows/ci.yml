@@ -4,10 +4,19 @@ on:
   pull_request:
   push:
     branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   scan_ruby:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout code
@@ -20,12 +29,13 @@ jobs:
 
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
-      
+
       - name: Scan for known security vulnerabilities in gems used
-        run: bin/bundler-audit
-      
+        run: bin/bundler-audit check --update
+
   scan_js:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout code
@@ -41,8 +51,10 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       RUBOCOP_CACHE_ROOT: tmp/rubocop
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -67,19 +79,34 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
-    # services:
-    #  redis:
-    #    image: valkey/valkey:8
-    #    ports:
-    #      - 6379:6379
-    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      PGHOST: 127.0.0.1
+      PGUSER: postgres
+      PGPASSWORD: postgres
+
     steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libvips
-
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libvips
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -87,38 +114,48 @@ jobs:
           bundler-cache: true
 
       - name: Run tests
-        env:
-          RAILS_ENV: test
-          # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-          # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test
+
+      - name: Load seeds
+        run: bin/rails db:seed:replant
 
   system-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
-    # services:
-    #  redis:
-    #    image: valkey/valkey:8
-    #    ports:
-    #      - 6379:6379
-    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      PGHOST: 127.0.0.1
+      PGUSER: postgres
+      PGPASSWORD: postgres
+
     steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libvips
-
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libvips
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
 
-      - name: Run System Tests
-        env:
-          RAILS_ENV: test
-          # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-          # REDIS_URL: redis://localhost:6379/0
+      - name: Run system tests
         run: bin/rails db:test:prepare test:system
 
       - name: Keep screenshots from failed system tests
@@ -128,3 +165,56 @@ jobs:
           name: screenshots
           path: ${{ github.workspace }}/tmp/screenshots
           if-no-files-found: ignore
+
+  docker:
+    name: Docker image
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build production image
+        run: docker build --tag billete:ci .
+
+      - name: Boot the image against Postgres
+        run: |
+          set -euo pipefail
+
+          docker run --detach --name billete --network host \
+            --env HTTP_PORT=8080 \
+            --env SECRET_KEY_BASE="$(openssl rand -hex 64)" \
+            --env DB_HOST=127.0.0.1 \
+            --env DB_USERNAME=postgres \
+            --env DB_PASSWORD=postgres \
+            billete:ci
+
+          for _ in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8080/up; then
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Application did not become healthy"
+          docker logs billete
+          exit 1
+
+      - name: Show container logs
+        if: failure()
+        run: docker logs billete || true

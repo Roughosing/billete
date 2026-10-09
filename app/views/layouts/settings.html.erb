@@ -1,0 +1,20 @@
+<% content_for :content do %>
+  <div class="settings">
+    <nav class="settings-nav" aria-label="Settings">
+      <% settings_pages = [
+        [ "Profile", settings_profile_path ],
+        [ "Email", settings_email_path ],
+        [ "Password", settings_password_path ],
+        [ "Account", settings_user_path ]
+      ] %>
+      <% settings_pages.each do |label, path| %>
+        <%= link_to label, path, class: ("is-current" if request.path == path), aria: { current: ("page" if request.path == path) } %>
+      <% end %>
+    </nav>
+
+    <div class="settings__main">
+      <%= yield %>
+    </div>
+  </div>
+<% end %>
+<%= render template: "layouts/application" %>

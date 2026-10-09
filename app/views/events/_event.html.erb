@@ -1,0 +1,14 @@
+<li class="event-card">
+  <%= link_to event, class: "event-card__link" do %>
+    <p class="event-card__when">
+      <time datetime="<%= event.starts_at.iso8601 %>">
+        <%= l event.starts_at.in_time_zone(event.time_zone), format: :event_card %>
+      </time>
+    </p>
+    <h2 class="event-card__title"><%= event.title %></h2>
+    <p class="event-card__where"><%= event.location %></p>
+    <p class="event-card__price">
+      <%= number_to_currency(event.price_cents.to_d / 100, unit: "€", format: "%n %u") %>
+    </p>
+  <% end %>
+</li>

@@ -29,3 +29,11 @@
 
 en:
   hello: "Hello world"
+  time:
+    formats:
+      event_card: "%a %-d %b, %H:%M"
+  
+  activerecord:
+    attributes:
+      user:
+        password_challenge: "Current password"

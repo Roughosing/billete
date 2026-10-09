@@ -1,0 +1,23 @@
+<% content_for :title, "Events · Billete" %>
+
+<section class="market">
+  <header class="market__intro">
+    <p class="eyebrow">On sale now</p>
+    <h1>Upcoming events</h1>
+    <p class="lede">General admission from organisers on Billete. Date, place, and price are fixed when a ticket goes on sale.</p>
+  </header>
+
+  <% if @events.any? %>
+    <ul class="event-grid">
+      <%= render @events %>
+    </ul>
+  <% else %>
+    <div class="empty-market">
+      <div class="empty-market__ticket" aria-hidden="true">
+        <span>Admit one</span>
+      </div>
+      <h2>Nothing on sale yet</h2>
+      <p>When an organiser publishes an event, it shows up here with its date, place, and price.</p>
+    </div>
+  <% end %>
+</section>
