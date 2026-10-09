@@ -1,0 +1,19 @@
+<% content_for :title, "New organization · Billete" %>
+
+<h1>Create your organization</h1>
+<p class="lede">Events you add belong to this organization.</p>
+
+<%= form_with model: @organization, url: organization_path, class: "auth-form" do |form| %>
+  <% if form.object.errors.any? %>
+    <div>Error: <%= form.object.errors.full_messages.first %></div>
+  <% end %>
+
+  <div>
+    <%= form.label :name %>
+    <%= form.text_field :name, required: true, autofocus: true, autocomplete: "organization" %>
+  </div>
+
+  <div>
+    <%= form.submit "Create organization" %>
+  </div>
+<% end %>

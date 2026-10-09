@@ -1,0 +1,19 @@
+<% content_for :title, "Organization · Billete" %>
+
+<h1>Organization</h1>
+<p class="lede">You are the admin of <%= @organization.name %>.</p>
+
+<%= form_with model: @organization, url: organization_path, class: "auth-form" do |form| %>
+  <% if form.object.errors.any? %>
+    <div>Error: <%= form.object.errors.full_messages.first %></div>
+  <% end %>
+
+  <div>
+    <%= form.label :name %>
+    <%= form.text_field :name, required: true, autofocus: true, autocomplete: "organization" %>
+  </div>
+
+  <div>
+    <%= form.submit "Update organization" %>
+  </div>
+<% end %>

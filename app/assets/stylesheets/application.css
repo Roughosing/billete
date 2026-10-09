@@ -90,6 +90,68 @@ main {
   gap: 0.85rem;
 }
 
+.account-menu {
+  position: relative;
+  min-width: 0;
+}
+
+.account-menu summary {
+  display: inline-flex;
+  align-items: center;
+  max-width: 12rem;
+  min-width: 0;
+  list-style: none;
+  cursor: pointer;
+}
+
+.account-menu__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.account-menu summary::after {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-left: 0.55rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-0.12rem) rotate(45deg);
+}
+
+.account-menu[open] summary::after {
+  transform: translateY(0.12rem) rotate(225deg);
+}
+
+.account-menu__panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.45rem);
+  z-index: 2;
+  display: grid;
+  min-width: 14rem;
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: var(--card);
+  box-shadow: 0 12px 30px rgba(28, 25, 21, 0.08);
+}
+
+.account-menu__panel a {
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.6rem;
+  text-decoration: none;
+}
+
+.account-menu__panel a:hover {
+  background: rgba(28, 25, 21, 0.05);
+}
+
 .site-nav__name {
   max-width: 12rem;
   overflow: hidden;
@@ -128,6 +190,7 @@ button.button-quiet {
   background: transparent;
   color: var(--ink);
   border-color: var(--line);
+  white-space: nowrap;
 }
 
 .button:hover,
@@ -253,6 +316,31 @@ h1 {
   font-weight: 600;
 }
 
+.event-detail { max-width: 40rem; }
+
+.event-detail .lede { margin-top: 1rem; }
+
+.event-detail .lede p { margin: 0; }
+
+.event-facts {
+  display: grid;
+  gap: 1.25rem;
+  margin: 2rem 0 0;
+}
+
+.event-facts div { display: grid; gap: 0.25rem; }
+
+.event-facts dt {
+  margin: 0;
+  color: var(--stamp);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.event-facts dd { margin: 0; font-size: 1.05rem; }
+
 .empty-market {
   margin-top: 2.5rem;
   padding: 2rem 1.5rem;
@@ -296,7 +384,10 @@ h1 {
 
 .auth-form input[type="email"],
 .auth-form input[type="password"],
-.auth-form input[type="text"] {
+.auth-form input[type="text"],
+.auth-form input[type="number"],
+.auth-form input[type="datetime-local"],
+.auth-form textarea {
   width: 100%;
   border: 1px solid var(--line);
   background: var(--card);
@@ -306,7 +397,14 @@ h1 {
   color: var(--ink);
 }
 
+.auth-form textarea {
+  min-height: 8rem;
+  resize: vertical;
+  line-height: 1.45;
+}
+
 .auth-form input:focus,
+.auth-form textarea:focus,
 .button:focus-visible,
 a:focus-visible,
 button:focus-visible {
@@ -314,14 +412,16 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-.settings {
+.settings,
+.organization {
   display: grid;
   grid-template-columns: 11rem minmax(0, 1fr);
   gap: 2.5rem;
   align-items: start;
 }
 
-.settings-nav {
+.settings-nav,
+.organization-nav {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -329,7 +429,8 @@ button:focus-visible {
   top: 5.5rem;
 }
 
-.settings-nav a {
+.settings-nav a,
+.organization-nav a {
   text-decoration: none;
   padding: 0.45rem 0.7rem;
   border-radius: 0.65rem;
@@ -337,14 +438,31 @@ button:focus-visible {
   border: 1px solid transparent;
 }
 
-.settings-nav a.is-current {
+.settings-nav a.is-current,
+.organization-nav a.is-current {
   background: var(--card);
   color: var(--ink);
   border-color: var(--line);
 }
 
-.settings__main h1 {
+.settings__main h1,
+.organization__main h1 {
   font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.organization-events .lede { max-width: 38rem; }
+
+.organization-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.organization-heading .button {
+  margin-left: auto;
+  flex: none;
 }
 
 .settings__main .button_to {
@@ -356,12 +474,14 @@ button:focus-visible {
 
   h1 { font-size: 2.5rem; }
 
-  .settings {
+  .settings,
+  .organization {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
 
-  .settings-nav {
+  .settings-nav,
+  .organization-nav {
     flex-direction: row;
     position: static;
   }

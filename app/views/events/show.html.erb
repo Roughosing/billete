@@ -1,0 +1,30 @@
+<% content_for :title, "#{@event.title} · Billete" %>
+
+<article class="event-detail">
+  <p class="eyebrow"><%= @event.organization.name %></p>
+  <h1><%= @event.title %></h1>
+  <div class="lede"><%= simple_format @event.description %></div>
+
+  <dl class="event-facts">
+    <div>
+      <dt>When</dt>
+      <dd>
+        <time datetime="<%= @event.starts_at.iso8601 %>">
+          <%= l @event.starts_at.in_time_zone(@event.time_zone), format: :event_card %>
+        </time>
+        –
+        <time datetime="<%= @event.ends_at.iso8601 %>">
+          <%= l @event.ends_at.in_time_zone(@event.time_zone), format: :event_card %>
+        </time>
+      </dd>
+    </div>
+    <div>
+      <dt>Where</dt>
+      <dd><%= @event.location %></dd>
+    </div>
+    <div>
+      <dt>Price</dt>
+      <dd><%= number_to_currency(@event.price_cents.to_d / 100, unit: "€", format: "%n %u") %></dd>
+    </div>
+  </dl>
+</article>

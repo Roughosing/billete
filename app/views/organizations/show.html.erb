@@ -1,0 +1,24 @@
+<% content_for :title, "#{@organization.name} · Billete" %>
+
+<header class="organization-events">
+  <p class="eyebrow">Your events</p>
+  <div class="organization-heading">
+    <h1><%= @organization.name %></h1>
+    <%= link_to "Create event", new_organization_event_path, class: "button" %>
+  </div>
+  <p class="lede">Events you add for this organization will show up here.</p>
+</header>
+
+<% if @events.any? %>
+  <ul class="event-grid">
+    <%= render @events %>
+  </ul>
+<% else %>
+  <div class="empty-market">
+    <div class="empty-market__ticket" aria-hidden="true">
+      <span>Admit one</span>
+    </div>
+    <h2>No events yet</h2>
+    <p>Creating an event comes next. Until then, this is where they will be listed.</p>
+  </div>
+<% end %>

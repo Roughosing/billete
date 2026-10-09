@@ -2,10 +2,10 @@ class EventsController < ApplicationController
   allow_unauthenticated_access only: %i[ index show ]
 
   def index
-    # Replace with published events once the Event model exists.
-    @events = []
+    @events = Event.all
   end
 
   def show
+    @event = Event.find(params[:id])
   end
 end

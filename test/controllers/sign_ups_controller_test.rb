@@ -24,7 +24,7 @@ class SignUpsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "ada@example.com", User.find_by!(first_name: "Ada").email_address
 
     follow_redirect!
-    assert_select "a", text: "Ada Lovelace"
+    assert_select "summary", text: "Ada Lovelace"
   end
 
   test "create with invalid details renders the form" do

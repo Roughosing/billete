@@ -1,0 +1,18 @@
+<% content_for :content do %>
+  <div class="organization">
+    <nav class="organization-nav" aria-label="Organization">
+      <% organization_pages = [
+        [ "Events", organization_path ],
+        [ "Organization", edit_organization_path ]
+      ] %>
+      <% organization_pages.each do |label, path| %>
+        <%= link_to label, path, class: ("is-current" if request.path == path), aria: { current: ("page" if request.path == path) } %>
+      <% end %>
+    </nav>
+
+    <div class="organization__main">
+      <%= yield %>
+    </div>
+  </div>
+<% end %>
+<%= render template: "layouts/application" %>

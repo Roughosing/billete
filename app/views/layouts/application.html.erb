@@ -26,7 +26,13 @@
 
         <nav class="site-nav" aria-label="Account">
           <% if authenticated? %>
-            <%= link_to Current.user.full_name, settings_profile_path, class: "button button-quiet" %>
+            <details class="account-menu" data-controller="account-menu" data-action="click@window->account-menu#close keydown@window->account-menu#closeOnEscape">
+              <summary class="button button-quiet"><span class="account-menu__name"><%= Current.user.full_name %></span></summary>
+              <div class="account-menu__panel">
+                <%= link_to "Manage my events", Current.user.organization ? organization_path : new_organization_path %>
+                <%= link_to "Account settings", settings_profile_path %>
+              </div>
+            </details>
             <%= button_to "Sign out", session_path, method: :delete, class: "button button-quiet" %>
           <% else %>
             <%= link_to "Sign in", new_session_path, class: "site-nav__link" %>

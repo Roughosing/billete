@@ -1,0 +1,41 @@
+<% content_for :title, "Create event · Billete" %>
+
+<h1>Create event</h1>
+<p class="lede">Create a new event for <%= @organization.name %>.</p>
+
+<%= form_with model: @event, url: organization_events_path, class: "auth-form" do |form| %>
+  <% if form.object.errors.any? %>
+    <div>Error: <%= form.object.errors.full_messages.first %></div>
+  <% end %>
+
+  <div>
+    <%= form.label :title %>
+    <%= form.text_field :title, required: true, autofocus: true, autocomplete: "event" %>
+  </div>
+  <div>
+    <%= form.label :description %>
+    <%= form.text_area :description, required: true, autocomplete: "event" %>
+  </div>
+  <div>
+    <%= form.label :location %>
+    <%= form.text_field :location, required: true, autocomplete: "event" %>
+  </div>
+  <div>
+    <%= form.label :starts_at %>
+    <%= form.datetime_field :starts_at, required: true, autocomplete: "event" %>
+  </div>
+  <div>
+    <%= form.label :ends_at %>
+    <%= form.datetime_field :ends_at, required: true, autocomplete: "event" %>
+  </div>
+  <div>
+    <%= form.label :capacity %>
+    <%= form.number_field :capacity, required: true, autocomplete: "event" %>
+  </div>
+  <div>
+    <%= form.label :price_cents %>
+    <%= form.number_field :price_cents, required: true, autocomplete: "event" %>
+  </div>
+
+  <%= form.submit "Create event" %>
+<% end %>
