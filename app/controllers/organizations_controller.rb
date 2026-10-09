@@ -10,9 +10,11 @@ class OrganizationsController < ApplicationController
   def create
     @organization = Organization.create_with_admin(Current.user, organization_params)
 
-    redirect_to organization_path, status: :see_other, notice: "Your organization was created."
-  rescue ActiveRecord::RecordInvalid
-    render :new, status: :unprocessable_entity
+    if @organization.persisted?
+      redirect_to organization_path, status: :see_other, notice: "Your organization was created."
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def show
