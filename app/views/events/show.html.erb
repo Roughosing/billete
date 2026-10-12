@@ -24,7 +24,7 @@
     </div>
     <div>
       <dt>Price</dt>
-      <dd><%= number_to_currency(@event.price_cents.to_d / 100, unit: "€", format: "%n %u") %></dd>
+      <dd><%= number_to_currency @event.ticket_types.map(&:price).min, unit: "€" %></dd>
     </div>
   </dl>
 </article>

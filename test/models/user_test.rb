@@ -6,6 +6,25 @@ class UserTest < ActiveSupport::TestCase
     assert_equal("downcased@example.com", user.email_address)
   end
 
+  test "email address must be unique and well formed" do
+    taken = User.new(first_name: "A", last_name: "B", email_address: "ONE@example.com", password: "secretsecret")
+    assert_not taken.valid?
+    assert_includes taken.errors[:email_address], "has already been taken"
+
+    malformed = User.new(first_name: "A", last_name: "B", email_address: "nope", password: "secretsecret")
+    assert_not malformed.valid?
+    assert_includes malformed.errors[:email_address], "is invalid"
+  end
+
+  test "confirm_email fails cleanly if the address was taken in the meantime" do
+    user = users(:one)
+    user.update!(unconfirmed_email: "next@example.com")
+    User.create!(first_name: "A", last_name: "B", email_address: "next@example.com", password: "secretsecret")
+
+    assert_not user.confirm_email
+    assert_equal "one@example.com", user.reload.email_address
+  end
+
   test "confirm_email promotes the unconfirmed address" do
     user = users(:one)
     user.update!(unconfirmed_email: "next@example.com")

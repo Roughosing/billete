@@ -1,12 +1,9 @@
 class Organizations::EventsController < ApplicationController
   before_action :set_organization
 
-  def index
-    @events = @organization.events.order(starts_at: :desc)
-  end
-
   def new
     @event = @organization.events.new
+    @event.ticket_types.build(name: "General admission")
   end
 
   def create
@@ -23,9 +20,13 @@ class Organizations::EventsController < ApplicationController
 
   def set_organization
     @organization = Current.user.organization
+    redirect_to new_organization_path unless @organization
   end
 
   def event_params
-    params.expect(event: [ :title, :description, :location, :starts_at, :ends_at, :capacity, :price_cents ])
+    params.expect(event: [
+      :title, :description, :location, :starts_at, :ends_at,
+      ticket_types_attributes: [ [ :name, :description, :price, :quantity ] ]
+    ])
   end
 end

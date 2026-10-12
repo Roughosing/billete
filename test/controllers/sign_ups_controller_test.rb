@@ -43,6 +43,23 @@ class SignUpsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "create with an email that is already taken renders the form" do
+    assert_no_difference -> { User.count } do
+      post sign_up_path, params: {
+        user: {
+          first_name: "Ada",
+          last_name: "Lovelace",
+          email_address: "ONE@example.com",
+          password: "secretsecret",
+          password_confirmation: "secretsecret"
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "div", text: /Email address has already been taken/
+  end
+
   test "a signed in user is sent back to the marketplace" do
     sign_in_as users(:one)
 

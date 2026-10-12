@@ -1,6 +1,7 @@
 class OrganizationsController < ApplicationController
   before_action :redirect_member_to_organization, only: %i[ new create ]
   before_action :set_organization, only: %i[ show edit update ]
+  before_action :require_admin, only: %i[ edit update ]
   layout "organization", only: %i[ show edit update ]
 
   def new
@@ -41,6 +42,12 @@ class OrganizationsController < ApplicationController
   def set_organization
     @organization = Current.user.organization
     redirect_to new_organization_path unless @organization
+  end
+
+  def require_admin
+    unless Current.user.membership.admin?
+      redirect_to organization_path, alert: "Only an admin can change the organization."
+    end
   end
 
   def organization_params

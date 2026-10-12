@@ -4,9 +4,12 @@ Rails.application.routes.draw do
   resource :sign_up
 
   root "events#index"
-  resources :events, only: %i[ index show ]
+  resources :events, only: %i[ index show ] do
+    resources :tickets, only: %i[ index ]
+  end
+
   resource :organization, only: %i[ new create show edit update ] do
-    resources :events, only: %i[ index new create ], module: :organizations
+    resources :events, only: %i[ new create ], module: :organizations
   end
 
   namespace :settings do

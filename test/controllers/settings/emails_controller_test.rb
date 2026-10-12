@@ -23,6 +23,30 @@ class Settings::EmailsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "one@example.com", @user.email_address
   end
 
+  test "update rejects a blank or malformed address" do
+    assert_no_enqueued_emails do
+      patch settings_email_path, params: { user: { unconfirmed_email: "", password_challenge: "password" } }
+      assert_response :unprocessable_entity
+
+      patch settings_email_path, params: { user: { unconfirmed_email: "not-an-email", password_challenge: "password" } }
+      assert_response :unprocessable_entity
+    end
+
+    assert_nil @user.reload.unconfirmed_email
+  end
+
+  test "update rejects an address another account already uses" do
+    assert_no_enqueued_emails do
+      patch settings_email_path, params: {
+        user: { unconfirmed_email: " Two@Example.com ", password_challenge: "password" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "div", text: /already been taken/
+    assert_nil @user.reload.unconfirmed_email
+  end
+
   test "update rejects a wrong current password" do
     assert_no_enqueued_emails do
       patch settings_email_path, params: {

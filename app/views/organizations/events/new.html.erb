@@ -28,14 +28,24 @@
     <%= form.label :ends_at %>
     <%= form.datetime_field :ends_at, required: true, autocomplete: "event" %>
   </div>
-  <div>
-    <%= form.label :capacity %>
-    <%= form.number_field :capacity, required: true, autocomplete: "event" %>
-  </div>
-  <div>
-    <%= form.label :price_cents %>
-    <%= form.number_field :price_cents, required: true, autocomplete: "event" %>
-  </div>
+
+  <fieldset>
+    <legend>Tickets</legend>
+    <%= form.fields_for :ticket_types do |ticket_type| %>
+      <div>
+        <%= ticket_type.label :name, "Ticket name" %>
+        <%= ticket_type.text_field :name, required: true %>
+      </div>
+      <div>
+        <%= ticket_type.label :price, "Price (#{@event.currency})" %>
+        <%= ticket_type.number_field :price, required: true, min: 0, step: 0.01, inputmode: "decimal" %>
+      </div>
+      <div>
+        <%= ticket_type.label :quantity %>
+        <%= ticket_type.number_field :quantity, required: true, min: 1, step: 1 %>
+      </div>
+    <% end %>
+  </fieldset>
 
   <%= form.submit "Create event" %>
 <% end %>

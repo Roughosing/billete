@@ -80,6 +80,28 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "South Gate", organization.reload.name
   end
 
+  test "staff cannot rename the organization" do
+    organization = join_organization("North Gate", role: :staff)
+    sign_in_as @user
+
+    get edit_organization_path
+    assert_redirected_to organization_path
+
+    patch organization_path, params: { organization: { name: "South Gate" } }
+
+    assert_redirected_to organization_path
+    assert_equal "North Gate", organization.reload.name
+  end
+
+  test "staff do not see the organization settings link" do
+    join_organization("North Gate", role: :staff)
+    sign_in_as @user
+
+    get organization_path
+
+    assert_select "a[href='#{edit_organization_path}']", count: 0
+  end
+
   test "the account menu sends a new organizer to the form" do
     sign_in_as @user
 
@@ -101,9 +123,9 @@ class OrganizationsControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def join_organization(name)
+  def join_organization(name, role: :admin)
     Organization.create!(name: name).tap do |organization|
-      organization.memberships.create!(user: @user, role: :admin)
+      organization.memberships.create!(user: @user, role: role)
     end
   end
 end

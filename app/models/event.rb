@@ -1,13 +1,17 @@
 class Event < ApplicationRecord
   belongs_to :organization
+  has_many :tickets, dependent: :destroy
+  has_many :ticket_types, -> { order(:position, :id) }, dependent: :destroy
+  accepts_nested_attributes_for :ticket_types
 
   attribute :currency, default: "EUR"
   attribute :time_zone, default: -> { Time.zone.name }
 
-  validates :title, :description, :location, :time_zone, :starts_at, :ends_at, :capacity, :price_cents, :currency, presence: true
-  validates :capacity, numericality: { greater_than: 0 }
-  validates :price_cents, numericality: { greater_than_or_equal_to: 0 }
+  validates :title, :description, :location, :time_zone, :starts_at, :ends_at, :currency, presence: true
   validate :ends_after_start
+
+  scope :upcoming, -> { where(ends_at: (Time.current..)) }
+  scope :past, -> { where(ends_at: (nil...Time.current)) }
 
   private
 
