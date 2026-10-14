@@ -40,37 +40,14 @@
 </section>
 
 <% if @events.any? %>
-  <div class="list" role="table" aria-label="Events">
-    <div class="list-head" role="row">
-      <span role="columnheader">Event</span>
-      <span role="columnheader">Location</span>
-      <span role="columnheader">Tickets</span>
-      <span role="columnheader">From</span>
-      <span role="columnheader" class="list-cell-end">Status</span>
-    </div>
-    <% @events.each do |event| %>
-      <% starts = event_local(event) %>
-      <% sold = @tickets_by_event.fetch(event.id, 0) %>
-      <% capacity = event.ticket_types.sum(&:quantity) %>
-      <% price = starting_price(event) %>
-      <%= link_to event, class: "list-row", role: "row" do %>
-        <div class="list-title" role="cell">
-          <%= date_chip(starts) %>
-          <div>
-            <strong><%= event.title %></strong>
-            <span class="tabular"><%= l starts, format: :event_card %></span>
-          </div>
-        </div>
-        <span class="list-cell list-cell-hide" role="cell"><%= event.location %></span>
-        <div class="list-cell list-cell-stack list-cell-hide" role="cell">
-          <span class="mono small"><%= number_with_delimiter sold %> / <%= number_with_delimiter capacity %></span>
-          <span class="progress" aria-hidden="true"><span style="width: <%= capacity.positive? ? (sold * 100.0 / capacity).round : 0 %>%"></span></span>
-        </div>
-        <span class="list-cell mono list-cell-hide" role="cell"><%= price.nil? ? "—" : format_price(price, event.currency) %></span>
-        <span class="list-cell-end" role="cell"><%= event_status_badge(event) %></span>
-      <% end %>
-    <% end %>
-  </div>
+  <section class="events-list">
+  <h2 class="events-list-title">Upcoming events</h2>
+    <%= render "events_list", events: @events.upcoming %>
+  </section>
+  <section class="events-list">
+    <h2 class="events-list-title">Past events</h2>
+    <%= render "events_list", events: @events.past %>
+  </section>
 <% else %>
   <div class="empty">
     <div class="empty-art"><%= icon :ticket %></div>

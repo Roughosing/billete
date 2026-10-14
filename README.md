@@ -8,6 +8,8 @@ Billete sells general-admission tickets. An organiser publishes an event with a 
 
 Checkout is the next piece of work. The event page shows ticket types and remaining places, and the purchase button stays disabled until payments are wired up.
 
+![The Billete marketplace, with upcoming events on sale](docs/marketplace.png)
+
 ## Features
 
 - Public marketplace of upcoming events, with search by name or place
