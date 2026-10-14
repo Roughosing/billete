@@ -1,23 +1,50 @@
 <% content_for :title, "Email · Billete" %>
 
-<h1>Change Email</h1>
+<header class="page-header">
+  <div class="page-header-text">
+    <p class="eyebrow">Settings</p>
+    <h1>Email</h1>
+    <p class="lede">The address you sign in with and where your tickets are sent.</p>
+  </div>
+</header>
 
-<%= form_with model: Current.user, url: settings_email_path, class: "auth-form" do |form| %>
-  <% if form.object.errors.any? %>
-    <div>Error: <%= form.object.errors.full_messages.first %></div>
+<div class="stack-6">
+  <div class="card card-pad">
+    <div class="cluster cluster-between">
+      <div>
+        <p class="caption">Current address</p>
+        <p class="mono"><%= Current.user.email_address %></p>
+      </div>
+      <% if Current.user.unconfirmed_email.present? %>
+        <span class="badge badge-warning">Pending: <%= Current.user.unconfirmed_email %></span>
+      <% else %>
+        <span class="badge badge-plain">Primary</span>
+      <% end %>
+    </div>
+  </div>
+
+  <%= form_with model: Current.user, url: settings_email_path, class: "card" do |form| %>
+    <div class="card-header">
+      <div>
+        <h2>Change email address</h2>
+        <p>We'll send a verification link to the new address. Your current address keeps working until you confirm.</p>
+      </div>
+    </div>
+    <div class="card-body stack-4">
+      <%= render "shared/form_errors", object: form.object %>
+
+      <div class="field">
+        <%= form.label :unconfirmed_email, "New email address" %>
+        <%= form.email_field :unconfirmed_email, required: true, autocomplete: "email", placeholder: "you@example.com" %>
+      </div>
+      <div class="field">
+        <%= form.label :password_challenge %>
+        <%= form.password_field :password_challenge, required: true, autocomplete: "current-password" %>
+        <p class="field-hint">Confirm it's you before changing where we send tickets.</p>
+      </div>
+    </div>
+    <div class="card-footer">
+      <%= form.submit "Send verification", class: "btn btn-primary", data: { turbo_submits_with: "Sending…" } %>
+    </div>
   <% end %>
-
-  <div>
-    <%= form.label :unconfirmed_email, "New email address" %>
-    <%= form.email_field :unconfirmed_email, required: true %>
-  </div>
-
-  <div>
-    <%= form.label :password_challenge %>
-    <%= form.password_field :password_challenge, required: true, autocomplete: "current-password" %>
-  </div>
-
-  <div>
-    <%= form.submit "Update email address" %>
-  </div>
-<% end %>
+</div>

@@ -1,19 +1,23 @@
 <% content_for :title, "New organization · Billete" %>
 
-<h1>Create your organization</h1>
-<p class="lede">Events you add belong to this organization.</p>
+<div class="auth">
+  <div class="auth-card auth-card-wide">
+    <div class="auth-head">
+      <p class="eyebrow">Get started</p>
+      <h1>Create your organization</h1>
+      <p>Events you publish belong to your organization. You'll be its admin and can invite staff later.</p>
+    </div>
 
-<%= form_with model: @organization, url: organization_path, class: "auth-form" do |form| %>
-  <% if form.object.errors.any? %>
-    <div>Error: <%= form.object.errors.full_messages.first %></div>
-  <% end %>
+    <%= form_with model: @organization, url: organization_path, class: "auth-form" do |form| %>
+      <%= render "shared/form_errors", object: form.object %>
 
-  <div>
-    <%= form.label :name %>
-    <%= form.text_field :name, required: true, autofocus: true, autocomplete: "organization" %>
+      <div class="field">
+        <%= form.label :name, "Organization name" %>
+        <%= form.text_field :name, required: true, autofocus: true, autocomplete: "organization", placeholder: "e.g. North Gate Collective" %>
+        <p class="field-hint">Shown on every event page as "Presented by".</p>
+      </div>
+
+      <%= form.submit "Create organization", class: "btn btn-primary btn-lg", data: { turbo_submits_with: "Creating…" } %>
+    <% end %>
   </div>
-
-  <div>
-    <%= form.submit "Create organization" %>
-  </div>
-<% end %>
+</div>

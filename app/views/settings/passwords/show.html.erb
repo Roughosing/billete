@@ -1,28 +1,39 @@
 <% content_for :title, "Password · Billete" %>
 
-<h1>Password</h1>
-
-<%= form_with model: Current.user, url: settings_password_path, class: "auth-form" do |form| %>
-  <% if form.object.errors.any? %>
-    <div><%= form.object.errors.full_messages.first %></div>
-  <% end %>
-
-  <div>
-    <%= form.label :password_challenge %>
-    <%= form.password_field :password_challenge, required: true, autocomplete: "current-password" %>
+<header class="page-header">
+  <div class="page-header-text">
+    <p class="eyebrow">Settings</p>
+    <h1>Password</h1>
+    <p class="lede">Choose a long, unique password. Changing it keeps you signed in here.</p>
   </div>
+</header>
 
-  <div>
-    <%= form.label :password %>
-    <%= form.password_field :password, required: true, autocomplete: "new-password" %>
+<%= form_with model: Current.user, url: settings_password_path, class: "card" do |form| %>
+  <div class="card-header">
+    <div>
+      <h2>Change password</h2>
+      <p>Enter your current password, then the new one twice.</p>
+    </div>
   </div>
+  <div class="card-body stack-4">
+    <%= render "shared/form_errors", object: form.object %>
 
-  <div>
-    <%= form.label :password_confirmation %>
-    <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
+    <div class="field">
+      <%= form.label :password_challenge %>
+      <%= form.password_field :password_challenge, required: true, autocomplete: "current-password" %>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <%= form.label :password, "New password" %>
+        <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72 %>
+      </div>
+      <div class="field">
+        <%= form.label :password_confirmation, "Confirm new password" %>
+        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72 %>
+      </div>
+    </div>
   </div>
-
-  <div>
-    <%= form.submit "Update password" %>
+  <div class="card-footer">
+    <%= form.submit "Update password", class: "btn btn-primary", data: { turbo_submits_with: "Updating…" } %>
   </div>
 <% end %>

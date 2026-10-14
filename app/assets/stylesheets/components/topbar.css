@@ -1,0 +1,144 @@
+/* Top bar */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: var(--topbar-h);
+  background: rgba(9, 9, 11, 0.72);
+  border-bottom: 1px solid var(--line);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  backdrop-filter: saturate(160%) blur(14px);
+}
+.topbar-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.topbar-start, .topbar-end {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 650;
+  font-size: 1.0625rem;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  padding: 0.25rem 0.375rem 0.25rem 0.25rem;
+  margin-left: -0.25rem;
+  border-radius: var(--r-md);
+  transition: opacity var(--dur) var(--ease);
+}
+.wordmark:hover { opacity: 0.85; }
+.wordmark svg { width: 1.5rem; height: 1.5rem; }
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--line);
+}
+.topbar-nav a {
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--r-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.topbar-nav a:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+.topbar-nav a[aria-current="page"] { color: var(--text); }
+
+/* Account menu (progressively enhanced <details>) */
+.menu { position: relative; }
+.menu > summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding: 0 0.5rem 0 0.25rem;
+  border-radius: var(--r-full);
+  border: 1px solid transparent;
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.menu > summary::-webkit-details-marker { display: none; }
+.menu > summary:hover,
+.menu[open] > summary { background: rgba(255, 255, 255, 0.05); border-color: var(--line); }
+.menu-name {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu-caret {
+  width: 0.875rem; height: 0.875rem;
+  color: var(--text-3);
+  transition: transform var(--dur) var(--ease);
+}
+.menu[open] .menu-caret { transform: rotate(180deg); }
+
+.menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 50;
+  min-width: 15rem;
+  padding: 0.375rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  transform-origin: top right;
+  animation: menu-in var(--dur) var(--ease);
+}
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.menu-head {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem 0.625rem;
+}
+.menu-head > div { min-width: 0; }
+.menu-head strong { display: block; font-size: 0.875rem; font-weight: 600; }
+.menu-head > div > span { display: block; font-size: 0.75rem; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 12rem; }
+.menu-sep { height: 1px; background: var(--line); margin: 0.25rem 0; }
+.menu-panel a,
+.menu-panel button {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.menu-panel a svg,
+.menu-panel button svg { width: 1rem; height: 1rem; color: var(--text-3); }
+.menu-panel a:hover,
+.menu-panel button:hover { background: rgba(255, 255, 255, 0.06); color: var(--text); }
+.menu-panel a:hover svg,
+.menu-panel button:hover svg { color: var(--text); }

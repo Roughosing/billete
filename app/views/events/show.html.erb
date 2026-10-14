@@ -1,30 +1,107 @@
 <% content_for :title, "#{@event.title} · Billete" %>
+<% starts = event_local(@event, :starts_at) %>
+<% ends = event_local(@event, :ends_at) %>
+<% status = event_status(@event) %>
+<% ticket_types = @event.ticket_types.to_a %>
+<% price = ticket_types.map(&:price).min %>
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <%= link_to "Events", root_path %>
+  <%= icon :chevron_right %>
+  <span aria-current="page"><%= @event.title %></span>
+</nav>
 
 <article class="event-detail">
-  <p class="eyebrow"><%= @event.organization.name %></p>
-  <h1><%= @event.title %></h1>
-  <div class="lede"><%= simple_format @event.description %></div>
+  <div class="event-detail__main">
+    <p class="event-detail__organizer">
+      <%= avatar @event.organization.name %>
+      <span>Presented by <strong><%= @event.organization.name %></strong></span>
+    </p>
 
-  <dl class="event-facts">
-    <div>
-      <dt>When</dt>
-      <dd>
-        <time datetime="<%= @event.starts_at.iso8601 %>">
-          <%= l @event.starts_at.in_time_zone(@event.time_zone), format: :event_card %>
-        </time>
-        –
-        <time datetime="<%= @event.ends_at.iso8601 %>">
-          <%= l @event.ends_at.in_time_zone(@event.time_zone), format: :event_card %>
-        </time>
-      </dd>
+    <div class="title-row">
+      <h1><%= @event.title %></h1>
+      <%= event_status_badge(@event) unless status == :upcoming %>
     </div>
-    <div>
-      <dt>Where</dt>
-      <dd><%= @event.location %></dd>
+
+    <dl class="event-facts">
+      <div>
+        <%= icon :calendar %>
+        <dt>Date</dt>
+        <dd>
+          <time datetime="<%= @event.starts_at.iso8601 %>"><%= l starts, format: :event_long %></time>
+        </dd>
+      </div>
+      <div>
+        <%= icon :clock %>
+        <dt>Time</dt>
+        <dd>
+          <time datetime="<%= @event.starts_at.iso8601 %>"><%= l starts, format: :event_time %></time>
+          –
+          <time datetime="<%= @event.ends_at.iso8601 %>"><%= starts.to_date == ends.to_date ? l(ends, format: :event_time) : l(ends, format: :event_card) %></time>
+          <span class="subtle small">(<%= starts.zone %>)</span>
+        </dd>
+      </div>
+      <div>
+        <%= icon :map_pin %>
+        <dt>Where</dt>
+        <dd><%= @event.location %></dd>
+      </div>
+    </dl>
+
+    <section class="event-section" aria-labelledby="about-heading">
+      <h2 id="about-heading">About this event</h2>
+      <div class="prose"><%= simple_format @event.description %></div>
+    </section>
+  </div>
+
+  <aside class="ticket-panel" aria-labelledby="tickets-heading">
+    <div class="ticket-panel__head">
+      <p class="caption" id="tickets-heading">Tickets</p>
+      <p class="ticket-panel__price">
+        <% if price.nil? %>
+          <strong class="subtle">TBA</strong>
+        <% elsif price.zero? %>
+          <strong>Free</strong>
+        <% else %>
+          <strong><%= format_price price, @event.currency %></strong>
+          <span><%= ticket_types.size > 1 ? "starting price" : "per ticket" %></span>
+        <% end %>
+      </p>
     </div>
-    <div>
-      <dt>Price</dt>
-      <dd><%= number_to_currency @event.ticket_types.map(&:price).min, unit: "€" %></dd>
+
+    <% if ticket_types.any? %>
+      <ul class="ticket-list">
+        <% ticket_types.each do |ticket_type| %>
+          <% remaining = ticket_type.remaining %>
+          <li class="ticket-row <%= "is-soldout" if remaining <= 0 %>">
+            <div>
+              <div class="ticket-row__name"><%= ticket_type.name %></div>
+              <% if remaining <= 0 %>
+                <div class="ticket-row__sub">Sold out</div>
+              <% elsif remaining <= 10 %>
+                <div class="ticket-row__sub is-warning">Only <%= remaining %> left</div>
+              <% elsif ticket_type.description.present? %>
+                <div class="ticket-row__sub"><%= ticket_type.description %></div>
+              <% end %>
+            </div>
+            <span class="ticket-row__price"><%= format_price ticket_type.price, @event.currency %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <div class="ticket-panel__foot">
+      <% if status == :ended %>
+        <button type="button" class="btn btn-lg btn-block" disabled>This event has ended</button>
+      <% elsif ticket_types.empty? %>
+        <button type="button" class="btn btn-lg btn-block" disabled>Tickets not yet announced</button>
+      <% else %>
+        <button type="button" class="btn btn-primary btn-lg btn-block" disabled aria-describedby="checkout-note">
+          <%= icon :ticket %> Get tickets
+        </button>
+        <p class="ticket-panel__note" id="checkout-note"><%= icon :clock %> Checkout opens soon</p>
+      <% end %>
+      <p class="ticket-panel__note"><%= icon :shield %> Price fixed at sale · General admission</p>
     </div>
-  </dl>
+  </aside>
 </article>

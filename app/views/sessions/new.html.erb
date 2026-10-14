@@ -1,10 +1,32 @@
-<h1>Sign in</h1>
-
-<%= form_with url: session_path, class: "auth-form" do |form| %>
-  <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] %><br>
-  <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72 %><br>
-  <%= form.submit "Sign in" %>
+<% content_for :title, "Sign in · Billete" %>
+<% content_for :minimal_chrome, true %>
+<% content_for :topbar_end do %>
+  <span class="small muted">New to Billete?</span>
+  <%= link_to "Create account", sign_up_path, class: "btn btn-sm" %>
 <% end %>
-<br>
 
-<%= link_to "Forgot password?", new_password_path %>
+<div class="auth">
+  <div class="auth-card">
+    <div class="auth-head">
+      <h1>Welcome back</h1>
+      <p>Sign in to manage your events and tickets.</p>
+    </div>
+
+    <%= form_with url: session_path, class: "auth-form" do |form| %>
+      <div class="field">
+        <%= form.label :email_address, "Email" %>
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "you@example.com", value: params[:email_address] %>
+      </div>
+      <div class="field">
+        <div class="auth-aside">
+          <%= form.label :password %>
+          <%= link_to "Forgot password?", new_password_path, class: "text-link" %>
+        </div>
+        <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Your password", maxlength: 72 %>
+      </div>
+      <%= form.submit "Sign in", class: "btn btn-primary btn-lg btn-block", data: { turbo_submits_with: "Signing in…" } %>
+    <% end %>
+
+    <p class="auth-foot">Don't have an account? <%= link_to "Sign up", sign_up_path, class: "text-link" %></p>
+  </div>
+</div>

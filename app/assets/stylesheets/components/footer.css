@@ -1,0 +1,17 @@
+/* Footer */
+
+.footer {
+  border-top: 1px solid var(--line);
+  padding: 1.5rem 0;
+  font-size: 0.8125rem;
+  color: var(--text-3);
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.footer a { color: var(--text-2); transition: color var(--dur) var(--ease); }
+.footer a:hover { color: var(--text); }

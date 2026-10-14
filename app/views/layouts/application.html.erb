@@ -2,55 +2,135 @@
 <html lang="en">
   <head>
     <title><%= content_for(:title) || "Billete" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#09090b">
+    <meta name="description" content="Billete — general admission tickets from organisers. Date, place, and price fixed when tickets go on sale.">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/icon.svg?v=2" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png?v=2">
 
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+    <%= stylesheet_link_tag *%w[
+      tokens
+      base
+      typography
+      layout
+      components/buttons
+      components/forms
+      components/cards
+      components/topbar
+      components/toasts
+      components/page_header
+      pages/marketplace
+      pages/event
+      pages/shell
+      components/form_sections
+      pages/auth
+      components/footer
+      responsive
+    ], "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
 
-    <header class="site-header">
-      <div class="site-header__inner">
-        <%= link_to root_path, class: "wordmark" do %>
-          <span class="wordmark__mark" aria-hidden="true"></span>
-          Billete
-        <% end %>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <div class="topbar-start">
+          <%= link_to root_path, class: "wordmark", aria: { label: "Billete home" } do %>
+            <%= render "shared/logo" %>
+            <span>Billete</span>
+          <% end %>
 
-        <nav class="site-nav" aria-label="Account">
-          <% if authenticated? %>
-            <details class="account-menu" data-controller="account-menu" data-action="click@window->account-menu#close keydown@window->account-menu#closeOnEscape">
-              <summary class="button button-quiet"><span class="account-menu__name"><%= Current.user.full_name %></span></summary>
-              <div class="account-menu__panel">
-                <%= link_to "Manage my events", Current.user.organization ? organization_path : new_organization_path %>
-                <%= link_to "Account settings", settings_profile_path %>
+          <% unless content_for?(:minimal_chrome) %>
+            <nav class="topbar-nav" aria-label="Primary">
+              <%= link_to "Events", root_path, aria: { current: ("page" if controller_path == "events") } %>
+              <% if authenticated? %>
+                <% dashboard_path = Current.user.organization ? organization_path : new_organization_path %>
+                <%= link_to "Dashboard", dashboard_path, aria: { current: ("page" if request.path.start_with?("/organization")) } %>
+              <% end %>
+            </nav>
+          <% end %>
+        </div>
+
+        <div class="topbar-end">
+          <% if content_for?(:topbar_end) %>
+            <%= yield :topbar_end %>
+          <% elsif authenticated? %>
+            <details class="menu" data-controller="menu" data-action="click@window->menu#closeOnOutsideClick keydown@window->menu#closeOnEscape turbo:before-cache@document->menu#close">
+              <summary aria-label="Account menu">
+                <%= avatar Current.user.full_name %>
+                <span class="menu-name"><%= Current.user.full_name %></span>
+                <%= icon :chevron_down, class: "menu-caret" %>
+              </summary>
+              <div class="menu-panel">
+                <div class="menu-head">
+                  <%= avatar Current.user.full_name, size: :lg %>
+                  <div>
+                    <strong><%= Current.user.full_name %></strong>
+                    <span><%= Current.user.email_address %></span>
+                  </div>
+                </div>
+                <div class="menu-sep" role="separator"></div>
+                <%= link_to Current.user.organization ? organization_path : new_organization_path do %>
+                  <%= icon :layout_grid %> Manage my events
+                <% end %>
+                <%= link_to settings_profile_path do %>
+                  <%= icon :sliders %> Account settings
+                <% end %>
+                <div class="menu-sep" role="separator"></div>
+                <%= button_to session_path, method: :delete do %>
+                  <%= icon :log_out %> Sign out
+                <% end %>
               </div>
             </details>
-            <%= button_to "Sign out", session_path, method: :delete, class: "button button-quiet" %>
           <% else %>
-            <%= link_to "Sign in", new_session_path, class: "site-nav__link" %>
-            <%= link_to "Sign up", sign_up_path, class: "button" %>
+            <%= link_to "Sign in", new_session_path, class: "btn btn-ghost" %>
+            <%= link_to "Sign up", sign_up_path, class: "btn btn-primary" %>
           <% end %>
-        </nav>
+        </div>
       </div>
     </header>
 
-    <main id="content">
-      <% if flash[:notice].present? %>
-        <p class="flash flash-notice" role="status"><%= flash[:notice] %></p>
-      <% end %>
-      <% if flash[:alert].present? %>
-        <p class="flash flash-alert" role="alert"><%= flash[:alert] %></p>
-      <% end %>
-
+    <main id="content" class="container">
       <%= content_for?(:content) ? yield(:content) : yield %>
     </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <span>&copy; <%= Date.current.year %> Billete</span>
+        <nav class="cluster" aria-label="Footer">
+          <%= link_to "Events", root_path %>
+          <%= link_to "Organisers", Current.user&.organization ? organization_path : new_organization_path %>
+          <a href="https://github.com/Roughosing/billete" rel="noopener">GitHub</a>
+        </nav>
+      </div>
+    </footer>
+
+    <div class="toasts" aria-live="polite">
+      <% if flash[:notice].present? %>
+        <div class="toast toast-notice" data-controller="toast" role="status">
+          <%= icon :check_circle, class: "toast-icon" %>
+          <p class="flash flash-notice"><%= flash[:notice] %></p>
+          <button type="button" class="toast-close" data-action="toast#dismiss" aria-label="Dismiss notification"><%= icon :x %></button>
+        </div>
+      <% end %>
+      <% if flash[:alert].present? %>
+        <div class="toast toast-alert" data-controller="toast" role="alert">
+          <%= icon :alert_circle, class: "toast-icon" %>
+          <p class="flash flash-alert"><%= flash[:alert] %></p>
+          <button type="button" class="toast-close" data-action="toast#dismiss" aria-label="Dismiss notification"><%= icon :x %></button>
+        </div>
+      <% end %>
+    </div>
   </body>
 </html>

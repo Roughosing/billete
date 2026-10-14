@@ -1,51 +1,95 @@
 <% content_for :title, "Create event · Billete" %>
 
-<h1>Create event</h1>
-<p class="lede">Create a new event for <%= @organization.name %>.</p>
+<header class="page-header">
+  <div class="page-header-text">
+    <p class="eyebrow">New event</p>
+    <h1>Create event</h1>
+    <p class="lede">Set the details, schedule, and tickets for <%= @organization.name %>. The event is listed on the marketplace as soon as it's saved.</p>
+  </div>
+</header>
 
-<%= form_with model: @event, url: organization_events_path, class: "auth-form" do |form| %>
-  <% if form.object.errors.any? %>
-    <div>Error: <%= form.object.errors.full_messages.first %></div>
-  <% end %>
+<%= form_with model: @event, url: organization_events_path, class: "event-form" do |form| %>
+  <%= render "shared/form_errors", object: form.object %>
 
-  <div>
-    <%= form.label :title %>
-    <%= form.text_field :title, required: true, autofocus: true, autocomplete: "event" %>
-  </div>
-  <div>
-    <%= form.label :description %>
-    <%= form.text_area :description, required: true, autocomplete: "event" %>
-  </div>
-  <div>
-    <%= form.label :location %>
-    <%= form.text_field :location, required: true, autocomplete: "event" %>
-  </div>
-  <div>
-    <%= form.label :starts_at %>
-    <%= form.datetime_field :starts_at, required: true, autocomplete: "event" %>
-  </div>
-  <div>
-    <%= form.label :ends_at %>
-    <%= form.datetime_field :ends_at, required: true, autocomplete: "event" %>
-  </div>
-
-  <fieldset>
-    <legend>Tickets</legend>
-    <%= form.fields_for :ticket_types do |ticket_type| %>
-      <div>
-        <%= ticket_type.label :name, "Ticket name" %>
-        <%= ticket_type.text_field :name, required: true %>
+  <section class="form-section" aria-labelledby="details-heading">
+    <div class="form-section-intro">
+      <h2 id="details-heading">Details</h2>
+      <p>What's on and where. The title and location appear on the marketplace card, the description on the event page.</p>
+    </div>
+    <div class="form-section-fields">
+      <div class="field">
+        <%= form.label :title %>
+        <%= form.text_field :title, required: true, autofocus: true, placeholder: "e.g. Opening Night", maxlength: 120 %>
       </div>
-      <div>
-        <%= ticket_type.label :price, "Price (#{@event.currency})" %>
-        <%= ticket_type.number_field :price, required: true, min: 0, step: 0.01, inputmode: "decimal" %>
+      <div class="field">
+        <%= form.label :description %>
+        <%= form.text_area :description, required: true, placeholder: "Line-up, door policy, what to expect…", rows: 6 %>
+        <p class="field-hint">Plain text. Blank lines start a new paragraph.</p>
       </div>
-      <div>
-        <%= ticket_type.label :quantity %>
-        <%= ticket_type.number_field :quantity, required: true, min: 1, step: 1 %>
+      <div class="field">
+        <%= form.label :location %>
+        <%= form.text_field :location, required: true, placeholder: "Venue, City, Country" %>
       </div>
-    <% end %>
-  </fieldset>
+    </div>
+  </section>
 
-  <%= form.submit "Create event" %>
+  <section class="form-section" aria-labelledby="schedule-heading">
+    <div class="form-section-intro">
+      <h2 id="schedule-heading">Schedule</h2>
+      <p>Times are in <span class="mono"><%= @event.time_zone %></span>. The event stays listed until it ends.</p>
+    </div>
+    <div class="form-section-fields">
+      <div class="form-grid">
+        <div class="field">
+          <%= form.label :starts_at, "Starts" %>
+          <%= form.datetime_field :starts_at, required: true %>
+        </div>
+        <div class="field">
+          <%= form.label :ends_at, "Ends" %>
+          <%= form.datetime_field :ends_at, required: true %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section" aria-labelledby="tickets-heading">
+    <div class="form-section-intro">
+      <h2 id="tickets-heading">Tickets</h2>
+      <p>General admission with a fixed price and capacity. Price and quantity are locked in once tickets sell.</p>
+    </div>
+    <div class="form-section-fields">
+      <%= form.fields_for :ticket_types do |ticket_type| %>
+        <div class="ticket-type-card">
+          <div class="ticket-type-card__head">
+            <h3><%= icon :ticket %> Ticket type</h3>
+            <span class="badge badge-plain"><%= @event.currency %></span>
+          </div>
+          <div class="field">
+            <%= ticket_type.label :name, "Ticket name" %>
+            <%= ticket_type.text_field :name, required: true, placeholder: "General admission" %>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <%= ticket_type.label :price, "Price (#{@event.currency})" %>
+              <div class="field-affix">
+                <span aria-hidden="true"><%= currency_symbol @event.currency %></span>
+                <%= ticket_type.number_field :price, required: true, min: 0, step: 0.01, inputmode: "decimal", placeholder: "0.00" %>
+              </div>
+              <p class="field-hint">Enter 0 for a free event.</p>
+            </div>
+            <div class="field">
+              <%= ticket_type.label :quantity %>
+              <%= ticket_type.number_field :quantity, required: true, min: 1, step: 1, inputmode: "numeric", placeholder: "100" %>
+              <p class="field-hint">Total places available.</p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <div class="form-actions-bar">
+    <%= link_to "Cancel", organization_path, class: "btn btn-ghost" %>
+    <%= form.submit "Create event", class: "btn btn-primary", data: { turbo_submits_with: "Creating…" } %>
+  </div>
 <% end %>

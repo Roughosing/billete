@@ -1,5 +1,6 @@
 class Organizations::EventsController < ApplicationController
   before_action :set_organization
+  layout "organization"
 
   def new
     @event = @organization.events.new

@@ -1,0 +1,17 @@
+<% if object&.errors&.any? %>
+  <div class="form-errors" role="alert">
+    <%= icon :alert_circle %>
+    <div>
+      <% if object.errors.count == 1 %>
+        <%= object.errors.full_messages.first %>
+      <% else %>
+        <strong>Please fix the following:</strong>
+        <ul class="form-errors-list">
+          <% object.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+<% end %>

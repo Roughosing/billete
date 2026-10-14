@@ -19,7 +19,12 @@ class OrganizationsController < ApplicationController
   end
 
   def show
-    @events = @organization.events.order(starts_at: :desc)
+    events = @organization.events
+    @events = events.includes(:ticket_types).order(starts_at: :desc)
+    @upcoming_count = events.upcoming.count
+    @capacity = TicketType.where(event_id: events.select(:id)).sum(:quantity)
+    @tickets_by_event = Ticket.confirmed.where(event_id: events.select(:id)).group(:event_id).count
+    @tickets_issued = @tickets_by_event.values.sum
   end
 
   def edit

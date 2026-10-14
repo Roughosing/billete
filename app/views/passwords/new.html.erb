@@ -1,6 +1,26 @@
-<h1>Forgot your password?</h1>
-
-<%= form_with url: passwords_path, class: "auth-form" do |form| %>
-  <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] %><br>
-  <%= form.submit "Email reset instructions" %>
+<% content_for :title, "Reset password · Billete" %>
+<% content_for :minimal_chrome, true %>
+<% content_for :topbar_end do %>
+  <%= link_to new_session_path, class: "btn btn-sm btn-ghost" do %>
+    <%= icon :arrow_left %> Back to sign in
+  <% end %>
 <% end %>
+
+<div class="auth">
+  <div class="auth-card">
+    <div class="auth-head">
+      <h1>Reset your password</h1>
+      <p>Enter the email you signed up with and we'll send you a link to choose a new password.</p>
+    </div>
+
+    <%= form_with url: passwords_path, class: "auth-form" do |form| %>
+      <div class="field">
+        <%= form.label :email_address, "Email" %>
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "you@example.com", value: params[:email_address] %>
+      </div>
+      <%= form.submit "Email me a reset link", class: "btn btn-primary btn-lg btn-block", data: { turbo_submits_with: "Sending…" } %>
+    <% end %>
+
+    <p class="auth-foot">Remembered it? <%= link_to "Sign in", new_session_path, class: "text-link" %></p>
+  </div>
+</div>

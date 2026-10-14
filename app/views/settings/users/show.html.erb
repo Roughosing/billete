@@ -1,6 +1,49 @@
 <% content_for :title, "Account · Billete" %>
 
-<h1>Account</h1>
-<p class="lede">Deleting your account removes your sign-in. This cannot be undone.</p>
+<header class="page-header">
+  <div class="page-header-text">
+    <p class="eyebrow">Settings</p>
+    <h1>Account</h1>
+    <p class="lede">Your sign-in and the data tied to it.</p>
+  </div>
+</header>
 
-<%= button_to "Delete my account", settings_user_path, method: :delete, class: "button button-danger", data: { turbo_confirm: "Delete your account? This cannot be undone." } %>
+<div class="stack-6">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2>Overview</h2>
+        <p>Signed in as <%= Current.user.full_name %>.</p>
+      </div>
+      <span class="badge badge-success">Active</span>
+    </div>
+    <dl class="card-body meta-grid">
+      <div>
+        <dt>Email</dt>
+        <dd class="mono"><%= Current.user.email_address %></dd>
+      </div>
+      <div>
+        <dt>Member since</dt>
+        <dd><%= l Current.user.created_at.to_date, format: :long %></dd>
+      </div>
+      <div>
+        <dt>Organization</dt>
+        <dd><%= Current.user.organization&.name || "None yet" %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="card danger-zone">
+    <div class="card-header">
+      <div>
+        <h2>Delete account</h2>
+        <p>Removes your sign-in and personal details. This cannot be undone.</p>
+      </div>
+    </div>
+    <div class="card-footer">
+      <%= button_to settings_user_path, method: :delete, class: "btn btn-danger", data: { turbo_confirm: "Delete your account? This cannot be undone." } do %>
+        <%= icon :trash %> Delete my account
+      <% end %>
+    </div>
+  </div>
+</div>

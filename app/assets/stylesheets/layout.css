@@ -1,0 +1,32 @@
+/* Layout primitives */
+
+.container {
+  width: min(var(--container), calc(100% - 2 * var(--gutter)));
+  margin-inline: auto;
+}
+
+.stack { display: flex; flex-direction: column; }
+.stack-2 > * + * { margin-top: 0.5rem; }
+.stack-4 > * + * { margin-top: 1rem; }
+.stack-6 > * + * { margin-top: 1.5rem; }
+.stack-8 > * + * { margin-top: 2rem; }
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cluster-between { justify-content: space-between; gap: 1rem; }
+
+.divider {
+  height: 1px;
+  background: var(--line);
+  border: 0;
+  margin: 0;
+}
+
+main {
+  flex: 1;
+  padding: 2.5rem 0 5rem;
+}

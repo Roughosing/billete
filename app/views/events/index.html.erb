@@ -1,23 +1,48 @@
 <% content_for :title, "Events · Billete" %>
 
-<section class="market">
-  <header class="market__intro">
+<section class="market" data-controller="filter" data-action="keydown@window->filter#focus">
+  <header class="hero">
     <p class="eyebrow">On sale now</p>
-    <h1>Upcoming events</h1>
-    <p class="lede">General admission from organisers on Billete. Date, place, and price are fixed when a ticket goes on sale.</p>
+    <h1 class="display">Upcoming events</h1>
+    <p class="lede">General admission from organisers on Billete. Date, place, and price are fixed the moment a ticket goes on sale — no surprises at checkout.</p>
+
+    <% if @events.any? %>
+      <div class="hero-toolbar">
+        <label class="search">
+          <span class="visually-hidden">Search events by name or location</span>
+          <%= icon :search %>
+          <input type="search" placeholder="Search by name or place…" autocomplete="off" spellcheck="false"
+                 data-filter-target="input" data-action="input->filter#apply keydown.esc->filter#clear">
+          <kbd aria-hidden="true">/</kbd>
+        </label>
+        <span class="result-count" data-filter-target="count" aria-live="polite"><%= pluralize_count(@events.size, "event") %></span>
+      </div>
+    <% end %>
   </header>
 
   <% if @events.any? %>
     <ul class="event-grid">
       <%= render @events %>
     </ul>
+
+    <div class="empty" data-filter-target="empty" hidden>
+      <div class="empty-art"><%= icon :search %></div>
+      <h2>No matching events</h2>
+      <p>Try a different name or place, or clear the search to see everything on sale.</p>
+      <button type="button" class="btn" data-action="filter#clear">Clear search</button>
+    </div>
   <% else %>
-    <div class="empty-market">
-      <div class="empty-market__ticket" aria-hidden="true">
-        <span>Admit one</span>
-      </div>
+    <div class="empty">
+      <div class="empty-art"><%= icon :ticket %></div>
       <h2>Nothing on sale yet</h2>
-      <p>When an organiser publishes an event, it shows up here with its date, place, and price.</p>
+      <p>When an organiser publishes an event, it appears here with its date, place, and price.</p>
+      <% if authenticated? %>
+        <%= link_to Current.user.organization ? new_organization_event_path : new_organization_path, class: "btn btn-primary" do %>
+          <%= icon :plus %> Create the first event
+        <% end %>
+      <% else %>
+        <%= link_to "Become an organiser", sign_up_path, class: "btn btn-primary" %>
+      <% end %>
     </div>
   <% end %>
 </section>

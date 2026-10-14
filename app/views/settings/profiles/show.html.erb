@@ -1,23 +1,35 @@
 <% content_for :title, "Profile · Billete" %>
 
-<h1>Profile</h1>
-
-<%= form_with model: Current.user, url: settings_profile_path, class: "auth-form" do |form| %>
-  <% if form.object.errors.any? %>
-    <div>Error: <%= form.object.errors.full_messages.first %></div>
-  <% end %>
-
-  <div>
-    <%= form.label :first_name %>
-    <%= form.text_field :first_name, required: true, autocomplete: "given-name" %>
+<header class="page-header">
+  <div class="page-header-text">
+    <p class="eyebrow">Settings</p>
+    <h1>Profile</h1>
+    <p class="lede">Your name appears on tickets and in the account menu.</p>
   </div>
+</header>
 
-  <div>
-    <%= form.label :last_name %>
-    <%= form.text_field :last_name, required: true, autocomplete: "family-name" %>
+<%= form_with model: Current.user, url: settings_profile_path, class: "card" do |form| %>
+  <div class="card-header">
+    <div>
+      <h2>Personal details</h2>
+      <p>Use the name you'd like shown on your tickets.</p>
+    </div>
   </div>
+  <div class="card-body stack-4">
+    <%= render "shared/form_errors", object: form.object %>
 
-  <div>
-    <%= form.submit "Update profile" %>
+    <div class="form-grid">
+      <div class="field">
+        <%= form.label :first_name %>
+        <%= form.text_field :first_name, required: true, autocomplete: "given-name" %>
+      </div>
+      <div class="field">
+        <%= form.label :last_name %>
+        <%= form.text_field :last_name, required: true, autocomplete: "family-name" %>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <%= form.submit "Save changes", class: "btn btn-primary", data: { turbo_submits_with: "Saving…" } %>
   </div>
 <% end %>

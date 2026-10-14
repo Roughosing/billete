@@ -32,8 +32,14 @@ en:
   time:
     formats:
       event_card: "%a %-d %b, %H:%M"
+      event_day: "%a %-d %b"
+      event_long: "%A %-d %B %Y"
+      event_time: "%H:%M"
 
   activerecord:
     attributes:
       user:
         password_challenge: "Current password"
+      event:
+        starts_at: "Start time"
+        ends_at: "End time"

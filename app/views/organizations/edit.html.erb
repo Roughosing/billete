@@ -1,19 +1,31 @@
 <% content_for :title, "Organization · Billete" %>
 
-<h1>Organization</h1>
-<p class="lede">You are the admin of <%= @organization.name %>.</p>
-
-<%= form_with model: @organization, url: organization_path, class: "auth-form" do |form| %>
-  <% if form.object.errors.any? %>
-    <div>Error: <%= form.object.errors.full_messages.first %></div>
-  <% end %>
-
-  <div>
-    <%= form.label :name %>
-    <%= form.text_field :name, required: true, autofocus: true, autocomplete: "organization" %>
+<header class="page-header">
+  <div class="page-header-text">
+    <p class="eyebrow">Settings</p>
+    <h1>Organization</h1>
+    <p class="lede">How your organization appears to people browsing and buying tickets.</p>
   </div>
+</header>
 
-  <div>
-    <%= form.submit "Update organization" %>
+<%= form_with model: @organization, url: organization_path, class: "card" do |form| %>
+  <div class="card-header">
+    <div>
+      <h2>General</h2>
+      <p>Your public name on every event page.</p>
+    </div>
+    <span class="badge badge-accent badge-plain"><%= icon :shield %> Admin only</span>
+  </div>
+  <div class="card-body stack-4">
+    <%= render "shared/form_errors", object: form.object %>
+
+    <div class="field">
+      <%= form.label :name, "Organization name" %>
+      <%= form.text_field :name, required: true, autofocus: true, autocomplete: "organization" %>
+      <p class="field-hint">Renaming applies everywhere immediately, including events already on sale.</p>
+    </div>
+  </div>
+  <div class="card-footer">
+    <%= form.submit "Save changes", class: "btn btn-primary", data: { turbo_submits_with: "Saving…" } %>
   </div>
 <% end %>

@@ -1,36 +1,49 @@
-<h1>Sign up</h1>
-
-<%= form_with model: @user, url: sign_up_path, class: "auth-form" do |form| %>
-  <% if form.object.errors.any? %>
-    <div>Error: <%= form.object.errors.full_messages.first %></div>
-  <% end %>
-
-  <div>
-    <%= form.label :first_name %>
-    <%= form.text_field :first_name, required: true, autofocus: true, autocomplete: "given-name" %>
-  </div>
-
-  <div>
-    <%= form.label :last_name %>
-    <%= form.text_field :last_name, required: true, autocomplete: "family-name" %>
-  </div>
-
-  <div>
-    <%= form.label :email_address %>
-    <%= form.email_field :email_address, required: true, autocomplete: "email" %>
-  </div>
-
-  <div>
-    <%= form.label :password %>
-    <%= form.password_field :password, required: true, autocomplete: "new-password" %>
-  </div>
-
-  <div>
-    <%= form.label :password_confirmation %>
-    <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password" %>
-  </div>
-
-  <div>
-    <%= form.submit "Sign up" %>
-  </div>
+<% content_for :title, "Sign up · Billete" %>
+<% content_for :minimal_chrome, true %>
+<% content_for :topbar_end do %>
+  <span class="small muted">Already have an account?</span>
+  <%= link_to "Sign in", new_session_path, class: "btn btn-sm" %>
 <% end %>
+
+<div class="auth">
+  <div class="auth-card">
+    <div class="auth-head">
+      <h1>Create your account</h1>
+      <p>Buy tickets in a couple of taps, or set up an organization to sell your own.</p>
+    </div>
+
+    <%= form_with model: @user, url: sign_up_path, class: "auth-form" do |form| %>
+      <%= render "shared/form_errors", object: form.object %>
+
+      <div class="form-grid">
+        <div class="field">
+          <%= form.label :first_name %>
+          <%= form.text_field :first_name, required: true, autofocus: true, autocomplete: "given-name" %>
+        </div>
+        <div class="field">
+          <%= form.label :last_name %>
+          <%= form.text_field :last_name, required: true, autocomplete: "family-name" %>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= form.label :email_address, "Email" %>
+        <%= form.email_field :email_address, required: true, autocomplete: "email", placeholder: "you@example.com" %>
+      </div>
+
+      <div class="field">
+        <%= form.label :password %>
+        <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72 %>
+      </div>
+
+      <div class="field">
+        <%= form.label :password_confirmation, "Confirm password" %>
+        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72 %>
+      </div>
+
+      <%= form.submit "Create account", class: "btn btn-primary btn-lg btn-block", data: { turbo_submits_with: "Creating…" } %>
+    <% end %>
+
+    <p class="auth-foot">Already registered? <%= link_to "Sign in", new_session_path, class: "text-link" %></p>
+  </div>
+</div>

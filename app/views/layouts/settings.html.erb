@@ -1,18 +1,32 @@
 <% content_for :content do %>
-  <div class="settings">
-    <nav class="settings-nav" aria-label="Settings">
-      <% settings_pages = [
-        [ "Profile", settings_profile_path ],
-        [ "Email", settings_email_path ],
-        [ "Password", settings_password_path ],
-        [ "Account", settings_user_path ]
-      ] %>
-      <% settings_pages.each do |label, path| %>
-        <%= link_to label, path, class: ("is-current" if request.path == path), aria: { current: ("page" if request.path == path) } %>
-      <% end %>
-    </nav>
+  <div class="shell">
+    <aside class="shell-side">
+      <div class="side-context">
+        <%= avatar Current.user.full_name, size: :lg %>
+        <div>
+          <strong><%= Current.user.full_name %></strong>
+          <span><%= Current.user.email_address %></span>
+        </div>
+      </div>
 
-    <div class="settings__main">
+      <nav class="side-nav" aria-label="Settings">
+        <span class="side-nav-label">Account</span>
+        <% settings_pages = [
+          [ "Profile", settings_profile_path, :user ],
+          [ "Email", settings_email_path, :mail ],
+          [ "Password", settings_password_path, :lock ],
+          [ "Account", settings_user_path, :shield ]
+        ] %>
+        <% settings_pages.each do |label, path, icon_name| %>
+          <% current = request.path == path %>
+          <%= link_to path, class: ("is-current" if current), aria: { current: ("page" if current) } do %>
+            <%= icon icon_name %><%= label %>
+          <% end %>
+        <% end %>
+      </nav>
+    </aside>
+
+    <div class="shell-main">
       <%= yield %>
     </div>
   </div>

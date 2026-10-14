@@ -1,14 +1,33 @@
 <% content_for :content do %>
-  <div class="organization">
-    <nav class="organization-nav" aria-label="Organization">
-      <% organization_pages = [ [ "Events", organization_path ] ] %>
-      <% organization_pages << [ "Organization", edit_organization_path ] if Current.user.membership.admin? %>
-      <% organization_pages.each do |label, path| %>
-        <%= link_to label, path, class: ("is-current" if request.path == path), aria: { current: ("page" if request.path == path) } %>
-      <% end %>
-    </nav>
+  <% organization = Current.user.organization %>
+  <% membership = Current.user.membership %>
+  <div class="shell">
+    <aside class="shell-side">
+      <div class="side-context">
+        <%= avatar organization.name, size: :lg %>
+        <div>
+          <strong><%= organization.name %></strong>
+          <span><%= membership.role.humanize %> · Organiser</span>
+        </div>
+      </div>
 
-    <div class="organization__main">
+      <nav class="side-nav" aria-label="Organization">
+        <span class="side-nav-label">Manage</span>
+        <% pages = [
+          [ "Events", organization_path, :layout_grid ],
+          [ "New event", new_organization_event_path, :plus ]
+        ] %>
+        <% pages << [ "Organization", edit_organization_path, :building ] if membership.admin? %>
+        <% pages.each do |label, path, icon_name| %>
+          <% current = request.path == path %>
+          <%= link_to path, class: ("is-current" if current), aria: { current: ("page" if current) } do %>
+            <%= icon icon_name %><%= label %>
+          <% end %>
+        <% end %>
+      </nav>
+    </aside>
+
+    <div class="shell-main">
       <%= yield %>
     </div>
   </div>
